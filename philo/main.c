@@ -6,7 +6,7 @@
 /*   By: lucas-ma <lucas-ma@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/20 15:02:07 by lucas-ma          #+#    #+#             */
-/*   Updated: 2022/12/21 21:05:13 by lucas-ma         ###   ########.fr       */
+/*   Updated: 2022/12/22 15:23:31 by lucas-ma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,21 +26,25 @@ void	*routine(void *p)
 	philo = (t_philo *)p;
 	if (philo->id % 2 == 0)
 		usleep(10);
+	pthread_mutex_lock(&philo->l_meal[philo->id - 1]);
 	philo->last_meal = get_timer();
+	pthread_mutex_unlock(&philo->l_meal[philo->id - 1]);
 	while (1)
 	{
 		pthread_mutex_lock(&philo->mutex[philo->id - 1]);
 		print(philo, current_time(philo), "has taken a fork");
-		pthread_mutex_lock(&philo->mutex[philo->id % philo->var->num_philo]);
+		pthread_mutex_lock(&philo->mutex[philo->id]);
 		print(philo, current_time(philo), "has taken a fork");
 		print(philo, current_time(philo), "is eating");
 		philo->ate++;
 		if (philo->ate == philo->var->must_eat)
 			philo->var->total_ate++;
 		usleep(philo->var->time_eat * 1000);
+		pthread_mutex_lock(&philo->l_meal[philo->id - 1]);
 		philo->last_meal = get_timer();
+		pthread_mutex_unlock(&philo->l_meal[philo->id - 1]);
 		pthread_mutex_unlock(&philo->mutex[philo->id - 1]);
-		pthread_mutex_unlock(&philo->mutex[philo->id % philo->var->num_philo]);
+		pthread_mutex_unlock(&philo->mutex[philo->id]);
 		print(philo, current_time(philo), "is sleeping");
 		usleep(philo->var->time_sleep * 1000);
 		print(philo, current_time(philo), "is thinking");
@@ -58,20 +62,22 @@ void	check_finnish(t_philo *philo, t_all *var)
 		if (philo[i].var->total_ate == philo[i].var->num_philo)
 		{
 			destroy_mutex(philo);
-			free_param(philo, philo->mutex, var);
+			free_param(philo, philo->mutex, var, philo->l_meal);
 			return ;
 		}
+		pthread_mutex_lock(philo[i].l_meal);
 		if (get_timer() - philo[i].last_meal > (unsigned long)var->time_die)
 		{
 			usleep(100);
 			pthread_mutex_lock(philo->print);
 			printf("%lums	%d died\n", current_time(philo), philo->id);
 			destroy_mutex(philo);
-			free_param(philo, philo->mutex, var);
+			free_param(philo, philo->mutex, var, philo->l_meal);
 			return ;
 		}
+		pthread_mutex_unlock(philo[i].l_meal);
 		i = (i + 1) % var->num_philo;
-		usleep(200);
+		usleep(100);
 	}
 }
 
@@ -86,7 +92,7 @@ int	main(int ac, char **av)
 		return (exit_error());
 	var = malloc(sizeof(t_all));
 	if (init_var(var, av))
-		return (free_param(0, 0, var));
+		return (free_param(0, 0, var, 0));
 	philo = malloc(var->num_philo * sizeof(t_philo));
 	if (init_philo(philo, var))
 		return (1);

@@ -6,7 +6,7 @@
 /*   By: lucas-ma <lucas-ma@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/20 15:44:37 by lucas-ma          #+#    #+#             */
-/*   Updated: 2022/12/21 17:55:24 by lucas-ma         ###   ########.fr       */
+/*   Updated: 2022/12/22 14:50:39 by lucas-ma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ int	exit_error(void)
 	return (1);
 }
 
-int	free_param(t_philo *philo, pthread_mutex_t *m, t_all *var)
+int	free_param(t_philo *philo, pthread_mutex_t *m, t_all *var, pthread_mutex_t *l_meal)
 {
 	if (philo)
 		free(philo);
@@ -27,6 +27,8 @@ int	free_param(t_philo *philo, pthread_mutex_t *m, t_all *var)
 		free(m);
 	if (var)
 		free(var);
+	if (l_meal)
+		free(l_meal);
 	return (1);
 }
 

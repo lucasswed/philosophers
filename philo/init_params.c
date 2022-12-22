@@ -6,13 +6,13 @@
 /*   By: lucas-ma <lucas-ma@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/21 17:38:00 by lucas-ma          #+#    #+#             */
-/*   Updated: 2022/12/21 17:48:25 by lucas-ma         ###   ########.fr       */
+/*   Updated: 2022/12/22 15:19:07 by lucas-ma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-int	check_arg(char **av)
+static int	check_arg(char **av)
 {
 	int	i;
 	int	j;
@@ -57,8 +57,8 @@ int	init_var(t_all *var, char **av)
 	return (0);
 }
 
-void	fill_philo(t_philo *philo, t_all *var,\
-pthread_mutex_t *m, pthread_mutex_t *pr)
+static void	fill_philo(t_philo *philo, t_all *var,\
+pthread_mutex_t *m, pthread_mutex_t *pr, pthread_mutex_t *l_meal)
 {
 	int	i;
 
@@ -70,6 +70,7 @@ pthread_mutex_t *m, pthread_mutex_t *pr)
 		philo[i].mutex = m;
 		philo[i].print = pr;
 		philo[i].var = var;
+		philo[i].l_meal = l_meal;
 		i++;
 	}
 }
@@ -78,17 +79,25 @@ int	init_philo(t_philo *philo, t_all *var)
 {
 	pthread_mutex_t	*m;
 	pthread_mutex_t	pr;
+	pthread_mutex_t	*l_meal;
 	int				i;
 
 	i = 0;
-	m = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t) * var->num_philo);
+	m = malloc(sizeof(pthread_mutex_t) * var->num_philo);
 	if (!m || !philo)
-		return (free_param(philo, m, var));
+		return (free_param(philo, m, var, 0));
+	l_meal = malloc(sizeof(pthread_mutex_t) * var->num_philo);
+	if (!l_meal)
+		return (free_param(philo, m, var, l_meal));
+	while (i < var->num_philo)
+		if (pthread_mutex_init(&l_meal[i++], 0))
+			return (free_param(philo, m, var, l_meal));
+	i = 0;
 	while (i < var->num_philo)
 		if (pthread_mutex_init(&m[i++], 0))
-			return (free_param(philo, m, var));
+			return (free_param(philo, m, var, l_meal));
 	if (pthread_mutex_init(&pr, 0))
-		return (free_param(philo, m, var));
-	fill_philo(philo, var, m, &pr);
+		return (free_param(philo, m, var, l_meal));
+	fill_philo(philo, var, m, &pr, l_meal);
 	return (0);
 }

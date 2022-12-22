@@ -6,7 +6,7 @@
 /*   By: lucas-ma <lucas-ma@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/20 15:02:05 by lucas-ma          #+#    #+#             */
-/*   Updated: 2022/12/21 17:46:50 by lucas-ma         ###   ########.fr       */
+/*   Updated: 2022/12/22 14:51:35 by lucas-ma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,7 @@ typedef struct	s_philo
 	t_all			*var;
 	pthread_mutex_t	*mutex;
 	pthread_mutex_t	*print;
+	pthread_mutex_t	*l_meal;
 	unsigned long	last_meal;
 }				t_philo;
 
@@ -49,7 +50,7 @@ int		init_philo(t_philo *philo, t_all *var);
 int		exit_error(void);
 int		ft_atoi(char *str);
 void	destroy_mutex(t_philo *philo);
-int		free_param(t_philo *philo, pthread_mutex_t *m, t_all *var);
+int		free_param(t_philo *philo, pthread_mutex_t *m, t_all *var, pthread_mutex_t *l_meal);
 
 //--------------------------------TIME.C--------------------------------//
 unsigned long	get_timer(void);

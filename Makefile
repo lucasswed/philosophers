@@ -6,7 +6,7 @@
 #    By: lucas-ma <lucas-ma@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/02/09 15:07:52 by lucas-ma          #+#    #+#              #
-#    Updated: 2022/12/21 20:26:59 by lucas-ma         ###   ########.fr        #
+#    Updated: 2022/12/22 15:14:30 by lucas-ma         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -38,7 +38,7 @@ _BIN    =        ./philo/
 ############### COMPILER ################
 
 CC      =        cc
-CFLAGS      =        -Wall -Werror -Wextra -g -fsanitize=address
+CFLAGS      =        -Wall -Werror -Wextra -g -fsanitize=thread
 #valgrind --leak-check=full --show-leak-kinds=all ./minishell
 SRCS    =        $(_SRC)main.c $(_SRC)utils.c $(_SRC)time.c $(_SRC)init_params.c
 
