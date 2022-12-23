@@ -6,7 +6,7 @@
 #    By: lucas-ma <lucas-ma@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/02/09 15:07:52 by lucas-ma          #+#    #+#              #
-#    Updated: 2022/12/23 08:25:15 by lucas-ma         ###   ########.fr        #
+#    Updated: 2022/12/23 11:15:32 by lucas-ma         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -30,10 +30,10 @@ CPY        =        cp
 
 ################# DIRS ##################
 
-_SRC    =        philo/
+_SRC    =        ./
 _OBJ 	=		 obj/
 _LIB    =        libs/
-_BIN    =        ./philo/
+_BIN    =        ./
 
 ############### COMPILER ################
 
@@ -45,14 +45,14 @@ SRCS    =        $(_SRC)main.c $(_SRC)utils.c $(_SRC)time.c $(_SRC)init_params.c
 OBJS    =        $(patsubst $(_SRC)%.c,$(_OBJ)%.o,$(SRCS))
 ################ RULES ##################
 
-all: $(_BIN)$(NAME)
+all: $(NAME)
 
 $(_OBJ)%.o: $(_SRC)%.c
 	$(MKD) -p $(@D)
 	$(CC) $(CFLAGS) -c $< -o $@
 
-$(_BIN)$(NAME): $(OBJS)
-	$(CC) $(CFLAGS)  $(OBJS) -o $(_BIN)$(NAME)
+$(NAME): $(OBJS)
+	$(CC) $(CFLAGS)  $(OBJS) -o $(NAME)
 
 ################ DEPS ###################
 
@@ -62,7 +62,7 @@ clean:
 	$(RMV) -r $(_OBJ)
 
 fclean: clean
-	$(RMV) -r $(_BIN)$(NAME)
+	$(RMV) -r $(NAME)
 
 re: fclean all
 

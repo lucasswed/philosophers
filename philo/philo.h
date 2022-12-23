@@ -6,7 +6,7 @@
 /*   By: lucas-ma <lucas-ma@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/20 15:02:05 by lucas-ma          #+#    #+#             */
-/*   Updated: 2022/12/23 08:53:56 by lucas-ma         ###   ########.fr       */
+/*   Updated: 2022/12/23 12:15:29 by lucas-ma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,22 +20,22 @@
 # include <unistd.h>
 # include <sys/time.h>
 
-typedef struct	s_all
+typedef struct s_all
 {
 	int				num_philo;
 	int				time_die;
 	int				time_eat;
 	int				time_sleep;
 	int				must_eat;
+	int				died;
 	int				total_ate;
 	unsigned long	time;
 }				t_all;
 
-typedef struct	s_philo
+typedef struct s_philo
 {
 	int				id;
 	int				ate;
-	int				died;
 	t_all			*var;
 	pthread_mutex_t	*mutex;
 	pthread_mutex_t	*print;
@@ -43,15 +43,17 @@ typedef struct	s_philo
 	unsigned long	last_meal;
 }				t_philo;
 
+int				philo_dead(t_philo *philo);
+
 //----------------------------INIT_PARAMS.C-----------------------------//
-int		init_var(t_all *var, char **av);
-int		init_philo(t_philo *philo, t_all *var);
+int				init_var(t_all *var, char **av);
+int				init_philo(t_philo *philo, t_all *var);
 
 //-------------------------------UTILS.C--------------------------------//
-int		exit_error(void);
-int		ft_atoi(char *str);
-void	destroy_mutex(t_philo *philo);
-int		free_param(t_philo *philo, pthread_mutex_t *m, t_all *var);
+int				exit_error(void);
+int				ft_atoi(char *str);
+void			destroy_mutex(t_philo *philo);
+int				free_param(t_philo *philo, pthread_mutex_t *m, t_all *var);
 
 //--------------------------------TIME.C--------------------------------//
 unsigned long	get_timer(void);

@@ -6,7 +6,7 @@
 /*   By: lucas-ma <lucas-ma@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/20 15:44:37 by lucas-ma          #+#    #+#             */
-/*   Updated: 2022/12/23 08:49:12 by lucas-ma         ###   ########.fr       */
+/*   Updated: 2022/12/23 11:09:56 by lucas-ma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,9 +34,13 @@ void	destroy_mutex(t_philo *philo)
 {
 	int	i;
 
-	i = 0;
-	while (i < philo->var->num_philo)
-		pthread_mutex_destroy(&philo->mutex[i++]);
+	i = -1;
+	while (++i < philo->var->num_philo)
+	{
+		pthread_mutex_destroy(&philo->print[i]);
+		pthread_mutex_destroy(&philo->mutex[i]);
+		pthread_mutex_destroy(&philo->dead[i]);
+	}
 }
 
 int	ft_atoi(char *str)
@@ -48,7 +52,7 @@ int	ft_atoi(char *str)
 	i = 0;
 	res = 0;
 	s = 1;
-	while((str[i] >= '\t' && str[i] <= '\r') || str[i] == ' ')
+	while ((str[i] >= '\t' && str[i] <= '\r') || str[i] == ' ')
 		i++;
 	if (str[i] == '+' || str[i] == '-')
 	{

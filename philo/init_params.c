@@ -6,7 +6,7 @@
 /*   By: lucas-ma <lucas-ma@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/21 17:38:00 by lucas-ma          #+#    #+#             */
-/*   Updated: 2022/12/23 09:11:21 by lucas-ma         ###   ########.fr       */
+/*   Updated: 2022/12/23 12:17:43 by lucas-ma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,13 +38,14 @@ int	init_var(t_all *var, char **av)
 	if (check_arg(av))
 		return (exit_error());
 	var->total_ate = 0;
+	var->died = 0;
 	var->time = get_timer();
 	var->num_philo = ft_atoi(av[1]);
 	var->time_die = ft_atoi(av[2]);
 	var->time_eat = ft_atoi(av[3]);
 	var->time_sleep = ft_atoi(av[4]);
-	if (var->num_philo <= 0 || var->time_die <= 0\
-	|| var->time_eat <= 0 || var->time_sleep <= 0)
+	if (var->num_philo <= 0 || var->time_die <= 0
+		|| var->time_eat <= 0 || var->time_sleep <= 0)
 		return (exit_error());
 	if (av[5])
 	{
@@ -58,9 +59,9 @@ int	init_var(t_all *var, char **av)
 }
 
 static void	fill_philo(t_philo *philo, t_all *var,
-		pthread_mutex_t *m, pthread_mutex_t *pr)
+					pthread_mutex_t *m, pthread_mutex_t *pr)
 {
-	int	i;
+	int				i;
 	pthread_mutex_t	*dead;
 
 	i = 0;
@@ -71,7 +72,6 @@ static void	fill_philo(t_philo *philo, t_all *var,
 	i = 0;
 	while (i < var->num_philo)
 	{
-		philo[i].died = 0;
 		philo[i].ate = 0;
 		philo[i].id = i + 1;
 		philo[i].mutex = m;
@@ -85,8 +85,7 @@ static void	fill_philo(t_philo *philo, t_all *var,
 int	init_philo(t_philo *philo, t_all *var)
 {
 	pthread_mutex_t	*m;
-	pthread_mutex_t	pr;
-	
+	pthread_mutex_t	*pr;
 	int				i;
 
 	i = 0;
@@ -97,8 +96,9 @@ int	init_philo(t_philo *philo, t_all *var)
 	while (i < var->num_philo)
 		if (pthread_mutex_init(&m[i++], 0))
 			return (free_param(philo, m, var));
-	if (pthread_mutex_init(&pr, 0))
+	pr = malloc(sizeof(pthread_mutex_t));
+	if (pthread_mutex_init(pr, 0))
 		return (free_param(philo, m, var));
-	fill_philo(philo, var, m, &pr);
+	fill_philo(philo, var, m, pr);
 	return (0);
 }
