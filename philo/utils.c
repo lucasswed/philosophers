@@ -6,7 +6,7 @@
 /*   By: lucas-ma <lucas-ma@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/20 15:44:37 by lucas-ma          #+#    #+#             */
-/*   Updated: 2022/12/26 23:11:00 by lucas-ma         ###   ########.fr       */
+/*   Updated: 2022/12/27 18:45:11 by lucas-ma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,12 +19,18 @@ int	exit_error(void)
 	return (1);
 }
 
-int	free_param(t_philo *philo, pthread_mutex_t *m, t_all *var)
+int	free_param(t_philo *philo, t_forks *m, t_all *var)
 {
 	if (philo)
 		free(philo);
 	if (m)
-		free(m);
+	{
+		if (m->c)
+			free(m->c);
+		if (m->i)
+			free(m->i);
+		free (m);
+	}
 	if (var)
 		free(var);
 	return (1);
@@ -45,12 +51,10 @@ void	destroy_mutex(t_philo *philo)
 	int	i;
 
 	i = -1;
+	pthread_mutex_destroy(&philo->var->dead);
+	pthread_mutex_destroy(&philo->var->print);
 	while (++i < philo->var->num_philo)
-	{
-		pthread_mutex_destroy(&philo->print[i]);
-		pthread_mutex_destroy(&philo->mutex[i]);
-		pthread_mutex_destroy(&philo->dead[i]);
-	}
+		pthread_mutex_destroy(&philo->var->f->c[i]);
 }
 
 int	ft_atoi(char *str)
