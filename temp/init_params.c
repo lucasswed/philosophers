@@ -6,7 +6,7 @@
 /*   By: lucas-ma <lucas-ma@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/21 17:38:00 by lucas-ma          #+#    #+#             */
-/*   Updated: 2022/12/26 22:46:12 by lucas-ma         ###   ########.fr       */
+/*   Updated: 2022/12/27 00:40:26 by lucas-ma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,6 @@ int	init_var(t_all *var, char **av)
 {
 	if (check_arg(av))
 		return (exit_error());
-	var->total_ate = 0;
 	var->finnish = 0;
 	var->time = get_timer();
 	var->num_philo = ft_atoi(av[1]);
@@ -58,47 +57,43 @@ int	init_var(t_all *var, char **av)
 	return (0);
 }
 
-static void	fill_philo(t_philo *philo, t_all *var,
-					pthread_mutex_t *m, pthread_mutex_t *pr)
+void	fill_philo(t_philo *philo, t_all *var)
 {
 	int				i;
-	pthread_mutex_t	*dead;
 
-	i = 0;
-	dead = malloc(sizeof(pthread_mutex_t) * var->num_philo);
-	while (i < var->num_philo)
-		if (pthread_mutex_init(&dead[i++], 0))
-			free_param(philo, m, var);
 	i = 0;
 	while (i < var->num_philo)
 	{
 		philo[i].ate = 0;
 		philo[i].id = i + 1;
-		philo[i].mutex = m;
-		philo[i].print = pr;
 		philo[i].var = var;
-		philo[i].dead = dead;
 		i++;
 	}
 }
 
-int	init_philo(t_philo *philo, t_all *var)
+int	init_threads(t_philo *philo)
 {
-	pthread_mutex_t	*m;
-	pthread_mutex_t	*pr;
 	int				i;
-
-	i = 0;
-	m = malloc(sizeof(pthread_mutex_t) * var->num_philo);
-	if (!m || !philo)
-		return (free_param(philo, m, var));
-	i = 0;
-	while (i < var->num_philo)
-		if (pthread_mutex_init(&m[i++], 0))
-			return (free_param(philo, m, var));
-	pr = malloc(sizeof(pthread_mutex_t));
-	if (pthread_mutex_init(pr, 0))
-		return (free_param(philo, m, var));
-	fill_philo(philo, var, m, pr);
-	return (0);
+	pthread_t		*th;
+	
+	th = malloc(sizeof(pthread_t) * philo->var->num_philo);
+	philo->mutex = malloc(sizeof(pthread_mutex_t) * philo->var->num_philo);
+	if (!th || !(philo->mutex))
+		return (0);
+	if (pthread_mutex_init(&(philo->dead), NULL)
+		|| pthread_mutex_init(&(philo->print), NULL))
+		return (0);
+	i = -1;
+	while (++i < philo->var->num_philo)
+		if (pthread_mutex_init(&(philo->mutex[i]), NULL))
+			return (0);
+	i = -1;
+	while (++i < philo->var->num_philo)
+		if (pthread_create(&th[i], NULL, routine, &(philo[i])))
+			return (0);
+	i = -1;
+	while (++i < philo->var->num_philo)
+		pthread_join(th[i], NULL);
+	free(th);
+	return (1);
 }
